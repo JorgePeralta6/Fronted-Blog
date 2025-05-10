@@ -1,0 +1,74 @@
+/* Estilo de la card */
+.product-card {
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Borde suave */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 20px rgba(134, 69, 69, 0.15); /* Sombra más pronunciada al pasar el ratón */
+}
+
+.card-header,
+.card-body {
+  padding: 1rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Contenedor de las cards */
+.products-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Modal */
+.modal-product img {
+  max-height: 400px;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.modal-header {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000f29;
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+.modal-footer {
+  justify-content: flex-start;
+}
+
+.modal-button {
+  margin-right: 10px;
+}
+/* Cabecera de productos */
+.products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.products-header .title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.products-header .search {
+  max-width: 300px;
+  width: 100%;
+}
+
