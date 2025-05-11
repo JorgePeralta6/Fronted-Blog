@@ -481,3 +481,32 @@ export const updateUser = async (id, data) => {
         };
     }
 }
+
+export const getPublications = async () => {
+    try {
+        return await apiClient.get('/publications')
+    } catch (e) {
+        const msg = e.response?.data?.msg || 'Error desconocido';
+        return {
+            error: true,
+            msg,
+            e,
+        };
+    }
+}
+
+export const addComment = async (publicationId, commentData) => {
+    try {
+        return await apiClient.post(`/comments`, {
+            publicationC: publicationId,
+            ...commentData
+        });
+    } catch (e) {
+        const msg = e.response?.data?.msg || 'Error desconocido';
+        return {
+            error: true,
+            msg,
+            e,
+        };
+    }
+};

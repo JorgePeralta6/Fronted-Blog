@@ -9,9 +9,10 @@ const UnauthorizedModal = lazy(() => import('./components/UnauthorizedModal'));
 const Stats = lazy(() => import('./pages/Stats'));
 const ClientsPage = lazy(() => import('./components/clients/ClientPage'));
 const UsersPage = lazy(() => import('./components/users/UserPage'));
+const PublicationsPage = lazy(() => import('./components/publications/PublicationPage'));
 
 const routes = [
-    { path: '/', element: <UsersPage /> }, // Cambiar Auth a ClientsPage
+    { path: '/', element: <PublicationsPage /> }, // Cambiar Auth a ClientsPage
     { path: '/unauthorized', element: <UnauthorizedModal /> },
     {
         path: '/dashboard/*',
