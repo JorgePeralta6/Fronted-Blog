@@ -1,5 +1,5 @@
 {
-  "name": "frontend-almacenadora",
+  "name": "blog-aprendizaje",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -17,7 +17,7 @@
     "axios": "^1.9.0",
     "dayjs": "^1.11.13",
     "framer-motion": "^12.9.7",
-    "frontend-almacenadora": "file:",
+    "blog-aprendizaje": "file:",
     "next-themes": "^0.4.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

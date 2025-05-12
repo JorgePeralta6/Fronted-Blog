@@ -495,12 +495,9 @@ export const getPublications = async () => {
     }
 }
 
-export const addComment = async (publicationId, commentData) => {
+export const addComment = async (data) => {
     try {
-        return await apiClient.post(`/comments`, {
-            publicationC: publicationId,
-            ...commentData
-        });
+        return await apiClient.post('/comments', data)
     } catch (e) {
         const msg = e.response?.data?.msg || 'Error desconocido';
         return {
@@ -509,4 +506,4 @@ export const addComment = async (publicationId, commentData) => {
             e,
         };
     }
-};
+}

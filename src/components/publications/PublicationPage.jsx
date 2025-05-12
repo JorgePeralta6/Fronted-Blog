@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import { getPublications, addComment } from "../../services";
+import { useForm, Controller } from "react-hook-form";
+import { getPublications } from "../../services";
 import { Box, Text, Button, VStack, HStack, Input } from "@chakra-ui/react";
-import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useComment } from "../../shared/hooks/useComment";
 
 const PublicationsPage = () => {
     const [publications, setPublications] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [newComments, setNewComments] = useState({});
+    const { addComment } = useComment();
+    const { control, handleSubmit, reset, setValue } = useForm();
 
+    // Obtener publicaciones desde el backend
     const fetchPublications = async () => {
         setIsLoading(true);
         const res = await getPublications();
@@ -26,79 +29,112 @@ const PublicationsPage = () => {
         fetchPublications();
     }, []);
 
-    const handleAddComment = async (publicationId) => {
-        const commentText = newComments[publicationId]?.trim();
-        if (!commentText) {
+    // Agregar un comentario a una publicación específica
+    const onSubmit = async (data) => {
+        const { publicationId, commentText } = data;
+        console.log(data);
+        
+
+        if (!commentText?.trim()) {
             return toast.error("El comentario no puede estar vacío");
         }
 
-        const res = await addComment(publicationId, {
-            comment: commentText,
-            author: "ID_DEL_AUTOR" // Cambia esto por el ID del usuario autenticado
+        const author = "UsuarioDemo"; // Reemplaza con tu lógica de autenticación
+
+        const newComment = await addComment( {
+            comment: commentText.trim(),
+            publicationId,
+            author,
         });
 
-        if (res?.error) {
-            return toast.error(res.msg);
-        }
+        if (!newComment) return;
 
         toast.success("Comentario agregado correctamente");
 
-        // Actualizar comentarios localmente
-        setPublications((prev) => 
+        setPublications((prev) =>
             prev.map((pub) =>
                 pub._id === publicationId
-                    ? { ...pub, comments: [...pub.comments, res.data.comment] }
+                    ? {
+                          ...pub,
+                          comments: [...pub.comments, newComment],
+                      }
                     : pub
             )
         );
 
-        setNewComments((prev) => ({ ...prev, [publicationId]: "" }));
-    };
-
-    const handleCommentChange = (publicationId, text) => {
-        setNewComments((prev) => ({
-            ...prev,
-            [publicationId]: text
-        }));
+        // Limpiar solo el input del comentario actual
+        reset({ [`comment-${publicationId}`]: "" });
+        fetchPublications();
     };
 
     return (
         <Box p={4}>
-            <Text fontSize="2xl" mb={4}>Publicaciones</Text>
+            <Text fontSize="2xl" mb={4}>
+                Publicaciones
+            </Text>
             {isLoading ? (
                 <Text>Cargando publicaciones...</Text>
             ) : (
                 <VStack spacing={4} align="stretch">
                     {publications.length > 0 ? (
                         publications.map((pub) => (
-                            <Box key={pub._id} p={4} shadow="md" borderWidth="1px" rounded="md">
-                                <Text fontSize="lg" fontWeight="bold">{pub.title}</Text>
+                            <Box
+                                key={pub._id}
+                                p={4}
+                                shadow="md"
+                                borderWidth="1px"
+                                rounded="md"
+                            >
+                                <Text fontSize="lg" fontWeight="bold">
+                                    {pub.title}
+                                </Text>
                                 <Text>{pub.maintext}</Text>
-                                <Text mt={2} fontSize="sm" color="gray.500">Autor: {pub.author.name}</Text>
-                                
+                                <Text mt={2} fontSize="sm" color="gray.500">
+                                    Autor: {pub.author}
+                                </Text>
+
                                 <Box mt={4}>
-                                    <Text fontSize="md" mb={2}>Comentarios:</Text>
-                                    {pub.comments.length > 0 ? (
+                                    <Text fontSize="md" mb={2}>
+                                        Comentarios:
+                                    </Text>
+                                    {pub.comments?.length > 0 ? (
                                         pub.comments.map((comment, index) => (
-                                            <Text key={index} fontSize="sm">- {comment.comment}</Text>
+                                            <Text key={index} fontSize="sm">
+                                                - <strong>{comment.author || "Anónimo"}:</strong>{" "}
+                                                {comment.comment}
+                                            </Text>
                                         ))
                                     ) : (
-                                        <Text fontSize="sm">No hay comentarios aún.</Text>
+                                        <Text fontSize="sm">
+                                            No hay comentarios aún.
+                                        </Text>
                                     )}
 
-                                    <HStack mt={2}>
-                                        <Input
-                                            placeholder="Agregar un comentario..."
-                                            value={newComments[pub._id] || ""}
-                                            onChange={(e) => handleCommentChange(pub._id, e.target.value)}
-                                        />
-                                        <Button
-                                            colorScheme="blue"
-                                            onClick={() => handleAddComment(pub._id)}
-                                        >
-                                            Comentar
-                                        </Button>
-                                    </HStack>
+                                    <form
+                                        onSubmit={handleSubmit((formData) =>
+                                            onSubmit({
+                                                publicationId: pub._id,
+                                                commentText: formData[`comment-${pub._id}`],
+                                            })
+                                        )}
+                                    >
+                                        <HStack mt={2}>
+                                            <Controller
+                                                name={`comment-${pub._id}`}
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) => (
+                                                    <Input
+                                                        placeholder="Agregar un comentario..."
+                                                        {...field}
+                                                    />
+                                                )}
+                                            />
+                                            <Button type="submit" colorScheme="blue">
+                                                Comentar
+                                            </Button>
+                                        </HStack>
+                                    </form>
                                 </Box>
                             </Box>
                         ))
