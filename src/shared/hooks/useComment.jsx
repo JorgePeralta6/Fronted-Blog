@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import {
     addComment as addCommentRequest,
+    deleteComment as deleteCommentRequest
 } from "../../services";
 
 export const useComment = () => {
@@ -21,9 +22,24 @@ export const useComment = () => {
         return result.data.comment;
     };
 
+    const deleteComment = async (publicationId, commentId) => {
+        const result = await deleteCommentRequest(publicationId, commentId);
+
+        if (result?.error) {
+            toast.error(result.msg || "No se pudo eliminar el comentario");
+            return false;
+        }
+
+        toast.success("Comentario eliminado correctamente");
+
+        setComments((prev) => prev.filter(comment => comment._id !== commentId));
+
+        return true;
+    };
 
     return {
         comments,
-        addComment
+        addComment,
+        deleteComment
     };
 };  
