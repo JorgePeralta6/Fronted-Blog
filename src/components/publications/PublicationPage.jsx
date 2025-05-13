@@ -101,6 +101,7 @@ const PublicationsPage = () => {
                                 <Text fontSize="2xl" fontWeight="bold">{pub.title}</Text>
                                 <Text fontSize="md" mt={2} color="gray.700">{pub.maintext}</Text>
                                 <Text mt={2} fontSize="sm" color="gray.500">Autor: {pub.author}</Text>
+                                <Text mt={2} fontSize="sm" color="gray.500">Curso: {pub.course}</Text>
 
                                 <Divider my={4} />
 
