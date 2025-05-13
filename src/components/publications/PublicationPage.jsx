@@ -9,9 +9,8 @@ const PublicationsPage = () => {
     const [publications, setPublications] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const { addComment } = useComment();
-    const { control, handleSubmit, reset, setValue } = useForm();
+    const { control, handleSubmit, reset } = useForm();
 
-    // Obtener publicaciones desde el backend
     const fetchPublications = async () => {
         setIsLoading(true);
         const res = await getPublications();
@@ -29,22 +28,17 @@ const PublicationsPage = () => {
         fetchPublications();
     }, []);
 
-    // Agregar un comentario a una publicación específica
     const onSubmit = async (data) => {
-        const { publicationId, commentText } = data;
-        console.log(data);
-        
+        const { publicationId, commentText, commentAuthor } = data;
 
         if (!commentText?.trim()) {
             return toast.error("El comentario no puede estar vacío");
         }
 
-        const author = "UsuarioDemo"; // Reemplaza con tu lógica de autenticación
-
-        const newComment = await addComment( {
+        const newComment = await addComment({
             comment: commentText.trim(),
             publicationId,
-            author,
+            author: commentAuthor?.trim() || "Anónimo",
         });
 
         if (!newComment) return;
@@ -63,51 +57,35 @@ const PublicationsPage = () => {
         );
 
         // Limpiar solo el input del comentario actual
-        reset({ [`comment-${publicationId}`]: "" });
-        fetchPublications();
+        reset({ [`comment-${publicationId}`]: "", [`author-${publicationId}`]: "" });
     };
 
     return (
         <Box p={4}>
-            <Text fontSize="2xl" mb={4}>
-                Publicaciones
-            </Text>
+            <Text fontSize="2xl" mb={4}>Publicaciones</Text>
             {isLoading ? (
                 <Text>Cargando publicaciones...</Text>
             ) : (
                 <VStack spacing={4} align="stretch">
                     {publications.length > 0 ? (
                         publications.map((pub) => (
-                            <Box
-                                key={pub._id}
-                                p={4}
-                                shadow="md"
-                                borderWidth="1px"
-                                rounded="md"
-                            >
-                                <Text fontSize="lg" fontWeight="bold">
-                                    {pub.title}
-                                </Text>
+                            <Box key={pub._id} p={4} shadow="md" borderWidth="1px" rounded="md">
+                                <Text fontSize="lg" fontWeight="bold">{pub.title}</Text>
                                 <Text>{pub.maintext}</Text>
                                 <Text mt={2} fontSize="sm" color="gray.500">
                                     Autor: {pub.author}
                                 </Text>
 
                                 <Box mt={4}>
-                                    <Text fontSize="md" mb={2}>
-                                        Comentarios:
-                                    </Text>
+                                    <Text fontSize="md" mb={2}>Comentarios:</Text>
                                     {pub.comments?.length > 0 ? (
                                         pub.comments.map((comment, index) => (
                                             <Text key={index} fontSize="sm">
-                                                - <strong>{comment.author || "Anónimo"}:</strong>{" "}
-                                                {comment.comment}
+                                                - <strong>{comment.author || "Anónimo"}:</strong> {comment.comment}
                                             </Text>
                                         ))
                                     ) : (
-                                        <Text fontSize="sm">
-                                            No hay comentarios aún.
-                                        </Text>
+                                        <Text fontSize="sm">No hay comentarios aún.</Text>
                                     )}
 
                                     <form
@@ -115,10 +93,22 @@ const PublicationsPage = () => {
                                             onSubmit({
                                                 publicationId: pub._id,
                                                 commentText: formData[`comment-${pub._id}`],
+                                                commentAuthor: formData[`author-${pub._id}`],
                                             })
                                         )}
                                     >
-                                        <HStack mt={2}>
+                                        <VStack mt={2} spacing={2}>
+                                            <Controller
+                                                name={`author-${pub._id}`}
+                                                control={control}
+                                                defaultValue=""
+                                                render={({ field }) => (
+                                                    <Input
+                                                        placeholder="Autor del comentario"
+                                                        {...field}
+                                                    />
+                                                )}
+                                            />
                                             <Controller
                                                 name={`comment-${pub._id}`}
                                                 control={control}
@@ -130,10 +120,8 @@ const PublicationsPage = () => {
                                                     />
                                                 )}
                                             />
-                                            <Button type="submit" colorScheme="blue">
-                                                Comentar
-                                            </Button>
-                                        </HStack>
+                                            <Button type="submit" colorScheme="blue">Comentar</Button>
+                                        </VStack>
                                     </form>
                                 </Box>
                             </Box>
@@ -147,4 +135,4 @@ const PublicationsPage = () => {
     );
 };
 
-export default PublicationsPage;
+export default PublicationsPage; 
