@@ -11,7 +11,12 @@ import {
     Divider,
     Stack,
     Badge,
-    IconButton
+    IconButton,
+    Grid,
+    Center,
+    useColorModeValue,
+    Heading,
+    Image
 } from "@chakra-ui/react";
 import { Trash } from "lucide-react";
 import toast from "react-hot-toast";
@@ -60,10 +65,7 @@ const PublicationsPage = () => {
         setPublications((prev) =>
             prev.map((pub) =>
                 pub._id === publicationId
-                    ? {
-                        ...pub,
-                        comments: [...pub.comments, newComment],
-                    }
+                    ? { ...pub, comments: [...pub.comments, newComment] }
                     : pub
             )
         );
@@ -87,67 +89,43 @@ const PublicationsPage = () => {
 
     return (
         <Box p={6}>
-            <Text fontSize="3xl" fontWeight="bold" mb={6}>
-                Publicaciones
-            </Text>
+            <Text fontSize="3xl" fontWeight="bold" mb={6}>Publicaciones</Text>
 
             {isLoading ? (
                 <Text>Cargando publicaciones...</Text>
             ) : (
-                <VStack spacing={6} align="stretch">
-                    {publications.length > 0 ? (
-                        publications.map((pub) => (
-                            <Box key={pub._id} p={6} borderWidth="1px" borderRadius="lg" shadow="md" bg="white">
-                                <Text fontSize="2xl" fontWeight="bold">{pub.title}</Text>
-                                <Text fontSize="md" mt={2} color="gray.700">{pub.maintext}</Text>
-                                <Text mt={2} fontSize="sm" color="gray.500">Autor: {pub.author}</Text>
-                                <Text mt={2} fontSize="sm" color="gray.500">Curso: {pub.course}</Text>
-
+                <Grid templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gap={6}>
+                    {publications.map((pub) => (
+                        <Box key={pub._id} p={6} bg={useColorModeValue("white", "gray.800")} boxShadow="2xl" rounded="lg">
+                            <Image rounded="lg" height={230} width="full" objectFit="cover" src={pub.image || "https://via.placeholder.com/300"} alt="#" />
+                            <Stack pt={5} spacing={3}>
+                                <Heading fontSize="xl">{pub.title}</Heading>
+                                <Text>{pub.maintext}</Text>
+                                <Text color="gray.500">Autor: {pub.author}</Text>
                                 <Divider my={4} />
-
-                                <Box>
-                                    <Text fontSize="lg" fontWeight="semibold" mb={2}>Comentarios:</Text>
-
-                                    <VStack align="start" spacing={2} mb={4}>
-                                        {pub.comments?.length > 0 ? (
-                                            pub.comments.map((comment) => (
-                                                <HStack key={comment._id} w="full" justify="space-between">
-                                                    <HStack>
-                                                        <Badge>{comment.author}</Badge>
-                                                        <Text fontSize="sm">{comment.comment}</Text>
-                                                    </HStack>
-                                                    <IconButton
-                                                        aria-label="Eliminar comentario"
-                                                        icon={<Trash />}
-                                                        onClick={() => handleDeleteComment(comment._id)}
-                                                    />
-                                                </HStack>
-                                            ))
-                                        ) : (
-                                            <Text fontSize="sm" color="gray.500">No hay comentarios aún.</Text>
-                                        )}
-                                    </VStack>
-
-                                    <form onSubmit={handleSubmit((formData) =>
-                                        onSubmit({
-                                            publicationId: pub._id,
-                                            commentText: formData[`comment-${pub._id}`],
-                                            commentAuthor: formData[`author-${pub._id}`],
-                                        })
-                                    )}>
-                                        <Stack spacing={3}>
-                                            <Controller name={`author-${pub._id}`} control={control} defaultValue="" render={({ field }) => <Input placeholder="Autor del comentario" {...field} />} />
-                                            <Controller name={`comment-${pub._id}`} control={control} defaultValue="" render={({ field }) => <Input placeholder="Agregar un comentario..." {...field} />} />
-                                            <Button type="submit" bg="rgb(74, 78, 140)" color="white" _hover={{ bg: "rgb(60, 65, 120)" }}>Comentar</Button>
-                                        </Stack>
-                                    </form>
-                                </Box>
-                            </Box>
-                        ))
-                    ) : (
-                        <Text>No hay publicaciones disponibles.</Text>
-                    )}
-                </VStack>
+                                <VStack align="start">
+                                    {pub.comments.map((comment) => (
+                                        <HStack key={comment._id} justify="space-between" w="full">
+                                            <Text>{comment.author}: {comment.comment}</Text>
+                                            <IconButton
+                                                aria-label="Eliminar comentario"
+                                                icon={<Trash />}
+                                                onClick={() => handleDeleteComment(comment._id)}
+                                            />
+                                        </HStack>
+                                    ))}
+                                </VStack>
+                                <form onSubmit={handleSubmit((formData) => onSubmit({ publicationId: pub._id, commentText: formData[`comment-${pub._id}`], commentAuthor: formData[`author-${pub._id}`] }))}>
+                                    <Stack spacing={3} mt={3}>
+                                        <Controller name={`author-${pub._id}`} control={control} defaultValue="" render={({ field }) => <Input placeholder="Autor del comentario" {...field} />} />
+                                        <Controller name={`comment-${pub._id}`} control={control} defaultValue="" render={({ field }) => <Input placeholder="Agregar un comentario..." {...field} />} />
+                                        <Button type="submit" colorScheme="teal">Comentar</Button>
+                                    </Stack>
+                                </form>
+                            </Stack>
+                        </Box>
+                    ))}
+                </Grid>
             )}
         </Box>
     );
