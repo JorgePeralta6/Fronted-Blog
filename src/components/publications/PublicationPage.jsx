@@ -28,11 +28,14 @@ import NavBar from '../dashboard/Navbar'
 const PublicationsPage = () => {
     const [publications, setPublications] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const { addComment, deleteComment } = useComment();
+    const { addComment, deleteComment, updateComment } = useComment();
     const { control, handleSubmit, reset } = useForm();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isCommentModalOpen, onOpen: onOpenCommentModal, onClose: onCloseCommentModal } = useDisclosure();
     const [selectedPublication, setSelectedPublication] = useState(null);
+    const [selectedComment, setSelectedComment] = useState(null);
+    const { isOpen: isEditCommentModalOpen, onOpen: onOpenEditCommentModal, onClose: onCloseEditCommentModal } = useDisclosure();
+
 
     const handleOpenModal = (publication) => {
         setSelectedPublication(publication);
@@ -100,6 +103,39 @@ const PublicationsPage = () => {
         }
     };
 
+    const handleEditComment = (comment) => {
+        setSelectedComment(comment);
+        onOpenEditCommentModal();
+    };
+
+    // Función para actualizar el comentario
+    const handleUpdateComment = async () => {
+        if (!selectedComment?.comment.trim()) {
+            return toast.error("El comentario no puede estar vacío");
+        }
+
+        const updatedComment = await updateComment(selectedComment._id, {
+            comment: selectedComment.comment.trim()
+        });
+
+        if (updatedComment) {
+            setPublications((prev) =>
+                prev.map((pub) =>
+                    pub._id === selectedPublication._id
+                        ? {
+                            ...pub,
+                            comments: pub.comments.map((c) =>
+                                c._id === selectedComment._id ? { ...c, comment: updatedComment.comment } : c
+                            ),
+                        }
+                        : pub
+                )
+            );
+            onCloseEditCommentModal();
+        }
+    };
+
+
     return (
         <>
             <NavBar />
@@ -131,15 +167,15 @@ const PublicationsPage = () => {
                             <VStack align="start" mt={2} spacing={2} w="full">
                                 {selectedPublication?.comments?.length > 0 ? (
                                     selectedPublication.comments.map((comment, index) => (
-                                        <HStack key={index} p={2}  rounded="md" w="full" justify="space-between">
-                                            <Text>
+                                        <HStack key={index} p={2} rounded="md" w="full" justify="space-between">
+                                            <Text onClick={() => handleEditComment(comment)} cursor="pointer">
                                                 <strong>{comment.author}:</strong> {comment.comment}
                                             </Text>
                                             <IconButton
                                                 aria-label="Eliminar comentario"
                                                 icon={<Trash />}
                                                 size="sm"
-                                                onClick={() => handleDeleteComment(comment._id)}
+                                                onClick={() => handleDeleteComment(selectedPublication._id, comment._id)}
                                             />
                                         </HStack>
                                     ))
@@ -199,6 +235,33 @@ const PublicationsPage = () => {
                         <ModalFooter>
                             <Button colorScheme="blue" mr={3} onClick={onCloseCommentModal}>
                                 Cerrar
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+                <Modal isOpen={isEditCommentModalOpen} onClose={onCloseEditCommentModal}>
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader>Editar Comentario</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                            <Input
+                                value={selectedComment?.comment || ""}
+                                onChange={(e) =>
+                                    setSelectedComment((prev) => ({
+                                        ...prev,
+                                        comment: e.target.value,
+                                    }))
+                                }
+                                placeholder="Editar tu comentario..."
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button colorScheme="blue" onClick={handleUpdateComment}>
+                                Guardar Cambios
+                            </Button>
+                            <Button ml={3} onClick={onCloseEditCommentModal}>
+                                Cancelar
                             </Button>
                         </ModalFooter>
                     </ModalContent>

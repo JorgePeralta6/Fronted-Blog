@@ -68,3 +68,16 @@ export const deleteComment = async (commentId) => {
         };
     }
 }
+
+export const updateComment = async (commentId, data) => {
+    try {
+        return await apiClient.put(`/comments/${commentId}`, data)
+    } catch (e) {
+        const msg = e.response?.data?.msg || 'Error desconocido';
+        return {
+            error: true,
+            msg,
+            e,
+        };
+    }
+}
