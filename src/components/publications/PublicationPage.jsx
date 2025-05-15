@@ -125,17 +125,28 @@ const PublicationsPage = () => {
                             />
                             <Text><strong>Curso:</strong> {selectedPublication?.course}</Text>
                             <Text><strong>Autor:</strong> {selectedPublication?.author}</Text>
-                            <Text>Comentarios:</Text>
-                                        {pub.comments.map((comment) => (
-                                            <HStack key={comment._id} justify="space-between" w="full">
-                                                <Text>{comment.author}: {comment.comment}</Text>
-                                                <IconButton
-                                                    aria-label="Eliminar comentario"
-                                                    icon={<Trash />}
-                                                    onClick={() => handleDeleteComment(pub._id, comment._id)}
-                                                />
-                                            </HStack>
-                                        ))}
+                            <Divider my={4} />
+
+                            <Heading size="md" mt={4}>Comentarios</Heading>
+                            <VStack align="start" mt={2} spacing={2} w="full">
+                                {selectedPublication?.comments?.length > 0 ? (
+                                    selectedPublication.comments.map((comment, index) => (
+                                        <HStack key={index} p={2}  rounded="md" w="full" justify="space-between">
+                                            <Text>
+                                                <strong>{comment.author}:</strong> {comment.comment}
+                                            </Text>
+                                            <IconButton
+                                                aria-label="Eliminar comentario"
+                                                icon={<Trash />}
+                                                size="sm"
+                                                onClick={() => handleDeleteComment(comment._id)}
+                                            />
+                                        </HStack>
+                                    ))
+                                ) : (
+                                    <Text color="gray.500">No hay comentarios aún.</Text>
+                                )}
+                            </VStack>
                         </ModalBody>
                         <ModalFooter>
                             <Button colorScheme="blue" mr={3} onClick={onClose}>
