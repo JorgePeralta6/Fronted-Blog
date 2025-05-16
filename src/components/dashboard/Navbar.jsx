@@ -4,7 +4,6 @@ import {
   Box,
   Flex,
   Avatar,
-  Text,
   Button,
   Menu,
   MenuButton,
@@ -18,6 +17,7 @@ import {
   Center,
 } from '@chakra-ui/react'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
+import { ChevronDown } from "lucide-react";
 
 const NavLink = ({ children }) => {
   return (
@@ -36,62 +36,40 @@ const NavLink = ({ children }) => {
     </Box>
   )
 }
+export default function Nav({ onCourseSelect }) {
+  const { colorMode, toggleColorMode } = useColorMode();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-export default function Nav() {
-  const { colorMode, toggleColorMode } = useColorMode()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const handleCourseSelect = (course) => {
+    onCourseSelect(course);
+  };
 
   return (
-    <>
-      <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
-        <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-        <Box 
-        fontSize="4xl" 
-        fontWeight="semibold"
-        fontFamily="mono"
-        >
-            Publicaciones
-            </Box>
+    <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
+      <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
+        <Box fontSize="4xl" fontWeight="semibold" fontFamily="mono">
+          Publicaciones
+        </Box>
+        <Flex alignItems={'center'}>
+          <Stack direction={'row'} spacing={7}>
+            <Menu>
+              <MenuButton as={Button} rightIcon={<ChevronDown />}>
+                Cursos
+              </MenuButton>
+              <MenuList>
+                <MenuItem onClick={() => onCourseSelect(null)}>Todas las Publicaciones</MenuItem>
+                <MenuItem onClick={() => onCourseSelect("Taller")}>Taller</MenuItem>
+                <MenuItem onClick={() => onCourseSelect("Tecnologia")}>Tecnología</MenuItem>
+                <MenuItem onClick={() => onCourseSelect("PracticaSupervisadas")}>Práctica Supervisadas</MenuItem>
+              </MenuList>
+            </Menu>
+            <Button onClick={toggleColorMode}>
+              {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+            </Button>
 
-          <Flex alignItems={'center'}>
-            <Stack direction={'row'} spacing={7}>
-              <Button onClick={toggleColorMode}>
-                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-              </Button>
-
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={'full'}
-                  variant={'link'}
-                  cursor={'pointer'}
-                  minW={0}
-                >
-                  <Avatar
-                    size={'sm'}
-                    src={'https://tse1.mm.bing.net/th/id/OIP.G0EnnhTwF5c4q5ZRtZ78WwAAAA?cb=iwc2&rs=1&pid=ImgDetMain'}
-                  />
-                </MenuButton>
-                <MenuList alignItems={'center'}>
-                  <br />
-                  <Center>
-                    <Avatar
-                      size={'2xl'}
-                      src={'https://tse1.mm.bing.net/th/id/OIP.G0EnnhTwF5c4q5ZRtZ78WwAAAA?cb=iwc2&rs=1&pid=ImgDetMain'}
-                    />
-                  </Center>
-                  <br />
-                  <Center>
-                    <p>Username</p>
-                  </Center>
-                  <br />
-                  <MenuDivider />
-                </MenuList>
-              </Menu>
-            </Stack>
-          </Flex>
+          </Stack>
         </Flex>
-      </Box>
-    </>
-  )
+      </Flex>
+    </Box>
+  );
 }

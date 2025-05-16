@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { getPublications } from "../../services";
+import { getPublications, getPublicationsByCourse } from "../../services";
 import {
     Box,
     Text,
@@ -10,10 +10,8 @@ import {
     Input,
     Divider,
     Stack,
-    Badge,
     IconButton,
     Grid,
-    Center,
     useColorModeValue,
     Heading,
     Image,
@@ -43,9 +41,11 @@ const PublicationsPage = () => {
     };
 
     // Fetch publications
-    const fetchPublications = async () => {
+    const fetchPublications = async (course = null) => {
         setIsLoading(true);
-        const res = await getPublications();
+
+        const res = course ? await getPublicationsByCourse(course) : await getPublications();
+
         setIsLoading(false);
 
         if (res?.error) {
@@ -138,7 +138,7 @@ const PublicationsPage = () => {
 
     return (
         <>
-            <NavBar />
+            <NavBar onCourseSelect={fetchPublications} />
             <Box p={6}>
                 {/* Modal de Ver Más */}
                 <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -155,7 +155,7 @@ const PublicationsPage = () => {
                                 height={200}
                                 width="100%"
                                 objectFit="cover"
-                                src={selectedPublication?.image || "https://via.placeholder.com/300"}
+                                src={selectedPublication?.image}
                                 alt="Imagen de la publicación"
                                 mb={4}
                             />
@@ -175,7 +175,7 @@ const PublicationsPage = () => {
                                                 aria-label="Eliminar comentario"
                                                 icon={<Trash />}
                                                 size="sm"
-                                                onClick={() => handleDeleteComment(selectedPublication._id, comment._id)}
+                                                onClick={() => handleDeleteComment(comment._id)}
                                             />
                                         </HStack>
                                     ))
@@ -273,7 +273,7 @@ const PublicationsPage = () => {
                     <Grid templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gap={6}>
                         {publications.map((pub) => (
                             <Box key={pub._id} p={6} bg={useColorModeValue("white", "gray.800")} boxShadow="2xl" rounded="lg">
-                                <Image rounded="lg" height={250} width="full" objectFit="cover" src={pub.image || "https://via.placeholder.com/300"} alt="#" />
+                                <Image rounded="lg" height={250} width="full" objectFit="cover" src={pub.image} alt="#" />
                                 <Stack pt={5} spacing={3}>
                                     <Heading fontSize="xl">{pub.title}</Heading>
                                     <Text>{pub.maintext}</Text>

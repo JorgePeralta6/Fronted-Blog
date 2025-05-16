@@ -81,3 +81,18 @@ export const updateComment = async (commentId, data) => {
         };
     }
 }
+
+export const getPublicationsByCourse = async (course) => {
+    try {
+        const res = await apiClient.get(`/publications/curso?course=${course}`);
+        console.log("Publicaciones por curso:", res.data);
+        return res;
+    } catch (e) {
+        console.error("Error en getPublicationsByCourse:", e.response?.data || e);
+        return {
+            error: true,
+            msg: e.response?.data?.message || 'Error desconocido',
+            e,
+        };
+    }
+};
