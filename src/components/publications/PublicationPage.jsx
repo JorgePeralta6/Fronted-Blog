@@ -18,7 +18,7 @@ import {
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton,
     ModalBody, ModalFooter, useDisclosure
 } from "@chakra-ui/react";
-import { Trash } from "lucide-react";
+import { Trash, List, Grid as GridIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { useComment } from "../../shared/hooks/useComment";
 import NavBar from '../dashboard/Navbar'
@@ -33,11 +33,17 @@ const PublicationsPage = () => {
     const [selectedPublication, setSelectedPublication] = useState(null);
     const [selectedComment, setSelectedComment] = useState(null);
     const { isOpen: isEditCommentModalOpen, onOpen: onOpenEditCommentModal, onClose: onCloseEditCommentModal } = useDisclosure();
+    const [viewMode, setViewMode] = useState(() => localStorage.getItem("viewMode") || "grid");
 
 
     const handleOpenModal = (publication) => {
         setSelectedPublication(publication);
         onOpen();
+    };
+
+    const handleViewModeChange = (mode) => {
+        setViewMode(mode);
+        localStorage.setItem("viewMode", mode); // Guardar en localStorage
     };
 
     // Fetch publications
@@ -140,6 +146,20 @@ const PublicationsPage = () => {
         <>
             <NavBar onCourseSelect={fetchPublications} />
             <Box p={6}>
+                <HStack justifyContent="flex-end" mb={4} w="full">
+                    <HStack>
+                        <IconButton
+                            icon={<GridIcon />}
+                            onClick={() => handleViewModeChange("grid")}
+                            colorScheme={viewMode === "grid" ? "blue" : "gray"}
+                        />
+                        <IconButton
+                            icon={<List />}
+                            onClick={() => handleViewModeChange("list")}
+                            colorScheme={viewMode === "list" ? "blue" : "gray"}
+                        />
+                    </HStack>
+                </HStack>
                 {/* Modal de Ver Más */}
                 <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
                     <ModalOverlay />
@@ -269,7 +289,7 @@ const PublicationsPage = () => {
 
                 {isLoading ? (
                     <Text>Cargando publicaciones...</Text>
-                ) : (
+                ) : viewMode === "grid" ? (
                     <Grid templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gap={6}>
                         {publications.map((pub) => (
                             <Box key={pub._id} p={6} bg={useColorModeValue("white", "gray.800")} boxShadow="2xl" rounded="lg">
@@ -283,12 +303,29 @@ const PublicationsPage = () => {
                                     <Button onClick={() => handleOpenModal(pub)} colorScheme="blue" size="sm">
                                         Ver más
                                     </Button>
-                                    <VStack align="start">
-                                    </VStack>
                                 </Stack>
                             </Box>
                         ))}
                     </Grid>
+                ) : (
+                    <VStack spacing={4} align="start">
+                        {publications.map((pub) => (
+                            <Box key={pub._id} p={4} bg={useColorModeValue("white", "gray.800")} boxShadow="2xl" rounded="lg" w="full">
+                                <HStack align="start">
+                                    <Image rounded="lg" height={100} width={100} objectFit="cover" src={pub.image} alt="#" />
+                                    <Stack spacing={2} flex={1}>
+                                        <Heading fontSize="lg">{pub.title}</Heading>
+                                        <Text>{pub.maintext}</Text>
+                                        <Text color="gray.500">Curso: {pub.course}</Text>
+                                        <Text color="gray.500">Autor: {pub.author}</Text>
+                                        <Button onClick={() => handleOpenModal(pub)} colorScheme="blue" size="sm">
+                                            Ver más
+                                        </Button>
+                                    </Stack>
+                                </HStack>
+                            </Box>
+                        ))}
+                    </VStack>
                 )}
             </Box>
         </>
