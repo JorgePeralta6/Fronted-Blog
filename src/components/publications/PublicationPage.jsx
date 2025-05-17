@@ -141,7 +141,6 @@ const PublicationsPage = () => {
         }
     };
 
-
     return (
         <>
             <NavBar onCourseSelect={fetchPublications} />
@@ -181,23 +180,29 @@ const PublicationsPage = () => {
                             />
                             <Text><strong>Curso:</strong> {selectedPublication?.course}</Text>
                             <Text><strong>Autor:</strong> {selectedPublication?.author}</Text>
+                            <Text><strong>Fecha-Publicada:</strong> {new Date(selectedPublication?.createdAt).toLocaleDateString()}</Text>
                             <Divider my={4} />
 
                             <Heading size="md" mt={4}>Comentarios</Heading>
                             <VStack align="start" mt={2} spacing={2} w="full">
                                 {selectedPublication?.comments?.length > 0 ? (
                                     selectedPublication.comments.map((comment, index) => (
-                                        <HStack key={index} p={2} rounded="md" w="full" justify="space-between">
-                                            <Text onClick={() => handleEditComment(comment)} cursor="pointer">
-                                                <strong>{comment.author}:</strong> {comment.comment}
+                                        <VStack key={index} p={2} rounded="md" w="full" align="start" spacing={1}>
+                                            <HStack w="full" justify="space-between">
+                                                <Text onClick={() => handleEditComment(comment)} cursor="pointer">
+                                                    <strong>{comment.author}:</strong> {comment.comment}
+                                                </Text>
+                                                <IconButton
+                                                    aria-label="Eliminar comentario"
+                                                    icon={<Trash />}
+                                                    size="sm"
+                                                    onClick={() => handleDeleteComment(comment._id)}
+                                                />
+                                            </HStack>
+                                            <Text fontSize="xs" color="gray.500">
+                                                {new Date(comment.createdAt).toLocaleDateString()}
                                             </Text>
-                                            <IconButton
-                                                aria-label="Eliminar comentario"
-                                                icon={<Trash />}
-                                                size="sm"
-                                                onClick={() => handleDeleteComment(comment._id)}
-                                            />
-                                        </HStack>
+                                        </VStack>
                                     ))
                                 ) : (
                                     <Text color="gray.500">No hay comentarios aún.</Text>
@@ -299,6 +304,7 @@ const PublicationsPage = () => {
                                     <Text>{pub.maintext}</Text>
                                     <Text color="gray.500">Curso: {pub.course}</Text>
                                     <Text color="gray.500">Autor: {pub.author}</Text>
+                                    <Text color="gray.500">Fecha-Publicacion: {new Date(pub.createdAt).toLocaleDateString()}</Text>
                                     <Divider my={4} />
                                     <Button onClick={() => handleOpenModal(pub)} colorScheme="blue" size="sm">
                                         Ver más
