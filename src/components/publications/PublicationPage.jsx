@@ -35,6 +35,11 @@ const PublicationsPage = () => {
     const { isOpen: isEditCommentModalOpen, onOpen: onOpenEditCommentModal, onClose: onCloseEditCommentModal } = useDisclosure();
     const [viewMode, setViewMode] = useState(() => localStorage.getItem("viewMode") || "grid");
 
+    const borderColorByCourse = {
+        PracticaSupervisadas: "blue.400",
+        Taller: "green.400",
+        Tecnologia: "purple.400",
+    };
 
     const handleOpenModal = (publication) => {
         setSelectedPublication(publication);
@@ -147,16 +152,8 @@ const PublicationsPage = () => {
             <Box p={6}>
                 <HStack justifyContent="flex-end" mb={4} w="full">
                     <HStack>
-                        <IconButton
-                            icon={<GridIcon />}
-                            onClick={() => handleViewModeChange("grid")}
-                            colorScheme={viewMode === "grid" ? "blue" : "gray"}
-                        />
-                        <IconButton
-                            icon={<List />}
-                            onClick={() => handleViewModeChange("list")}
-                            colorScheme={viewMode === "list" ? "blue" : "gray"}
-                        />
+                        <IconButton icon={<GridIcon />} onClick={() => handleViewModeChange("grid")} colorScheme={viewMode === "grid" ? "blue" : "gray"} />
+                        <IconButton icon={<List />} onClick={() => handleViewModeChange("list")} colorScheme={viewMode === "list" ? "blue" : "gray"} />
                     </HStack>
                 </HStack>
                 {/* Modal de Ver Más */}
@@ -297,14 +294,31 @@ const PublicationsPage = () => {
                 ) : viewMode === "grid" ? (
                     <Grid templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gap={6}>
                         {publications.map((pub) => (
-                            <Box key={pub._id} p={6} bg={useColorModeValue("white", "gray.800")} boxShadow="2xl" rounded="lg">
-                                <Image rounded="lg" height={250} width="full" objectFit="cover" src={pub.image} alt="#" />
-                                <Stack pt={5} spacing={3}>
+                            <Box
+                                key={pub._id}
+                                p={6}
+                                bg={useColorModeValue("white", "gray.800")}
+                                boxShadow="2xl"
+                                rounded="lg"
+                                borderLeft="6px solid"
+                                borderLeftColor={borderColorByCourse[pub.course] || "gray.300"}
+                            >
+                                <Image
+                                    rounded="lg"
+                                    height={250}
+                                    width="full"
+                                    objectFit="cover"
+                                    src={pub.image}
+                                    alt="#"
+                                />
+                                <Stack pt={5} spacing={3} flex={1}>
                                     <Heading fontSize="xl">{pub.title}</Heading>
                                     <Text>{pub.maintext}</Text>
                                     <Text color="gray.500">Curso: {pub.course}</Text>
                                     <Text color="gray.500">Autor: {pub.author}</Text>
-                                    <Text color="gray.500">Fecha-Publicacion: {new Date(pub.createdAt).toLocaleDateString()}</Text>
+                                    <Text color="gray.500">
+                                        Fecha-Publicacion: {new Date(pub.createdAt).toLocaleDateString()}
+                                    </Text>
                                     <Divider my={4} />
                                     <Button onClick={() => handleOpenModal(pub)} colorScheme="blue" size="sm">
                                         Ver más
@@ -316,17 +330,18 @@ const PublicationsPage = () => {
                 ) : (
                     <VStack spacing={4} align="start">
                         {publications.map((pub) => (
-                            <Box key={pub._id} p={4} bg={useColorModeValue("white", "gray.800")} boxShadow="2xl" rounded="lg" w="full">
+                            <Box key={pub._id} p={4} w="full" bg={useColorModeValue("white", "gray.800")} boxShadow="2xl" rounded="lg" borderLeft="6px solid" borderLeftColor={borderColorByCourse[pub.course]} >
                                 <HStack align="start">
-                                    <Image rounded="lg" height={100} width={100} objectFit="cover" src={pub.image} alt="#" />
+                                    <Image rounded="lg" height={190} width={250} objectFit="cover" src={pub.image} alt="#"/>
                                     <Stack spacing={2} flex={1}>
                                         <Heading fontSize="lg">{pub.title}</Heading>
                                         <Text>{pub.maintext}</Text>
                                         <Text color="gray.500">Curso: {pub.course}</Text>
                                         <Text color="gray.500">Autor: {pub.author}</Text>
-                                        <Button onClick={() => handleOpenModal(pub)} colorScheme="blue" size="sm">
-                                            Ver más
-                                        </Button>
+                                        <Text color="gray.500">
+                                            Fecha-Publicacion: {new Date(pub.createdAt).toLocaleDateString()}
+                                        </Text>
+                                        <Button onClick={() => handleOpenModal(pub)} colorScheme="blue" size="sm">Ver más</Button>
                                     </Stack>
                                 </HStack>
                             </Box>
