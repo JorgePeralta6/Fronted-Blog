@@ -1,16 +1,1 @@
-export { useEntry } from "./useGetMovementsEntrada";
-export { useSalida } from "./useGetMovementsSalida";
-export { useRegister } from "./useRegister";
-export { useLogin } from "./useLogin";
-export { logout } from "./useLogout";
-export { useProduct } from './useProducts';
-export { useStats } from "./useStats";
-export { usePercentage } from "./usePercentage";
-export { useTotalClients } from "./useTotalCLientes";
-export	{ useEarnings } from "./useEarnings";
-export { useTopProduct } from "./useTopProduct";
-export { useClient } from "./useClients";
-export { useCategories } from "./useCategories";
-export { useProviders } from "./useProviders";
-export { useProvidersUtils } from "./useProvidersUtils";
-export { useMovimientos } from "./useGetMovements";
+export { useComment} from "./useComment"
