@@ -148,6 +148,7 @@ const PublicationsPage = () => {
                 </HStack>
 
                 {isLoading ? (
+                    
                     <Text>Cargando publicaciones...</Text>
                 ) : (
                     <Grid
