@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'http://127.0.0.1:3000/blogAprendizaje/v1',
+    baseURL: 'https://backend-blog-gvf0.onrender.com/blogAprendizaje/v1',
     timeout: 5000
 })
 
